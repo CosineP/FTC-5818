@@ -1,14 +1,14 @@
 
 #include "JoystickDriver.c"
 
-void setLeft(int value)
+void setLeft(int speed)
 {
-	motor[leftBack] = value;
-	motor[leftFront] = value;
+	motor[leftBack] = speed;
+	motor[leftFront] = speed;
 }
 
-void setRight(int value)
+void setRight(int speed)
 {
-	motor[rightBack] = value;
-	motor[rightFront] = value;
+	motor[rightBack] = speed;
+	motor[rightFront] = speed;
 }
