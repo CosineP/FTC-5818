@@ -3,9 +3,10 @@ FTC-5818
 
 Year of 2014 - 2015 FTC for team 5818.
 
-The code in teleop.c is for what's exclusively for the driver-controlled period.
-The code in autonomous.c is for what's exclusively the anonamous mode.
-The code in library.c is for what will be used by both files.
+The code in "teleop.c" is for what's exclusively for the driver-controlled period.
+The code in "autonomous.c" is for what's exclusively the anonamous mode.
+The code in "library.c" is for what will be used by both files.
+The code in "testing.c" is for prototype code that will never be used in the final robot (and is safe to delete at any time).
 
 The branch "master" is for the most current code that we're testing and creating.
 The branch "current-robot" is for the code that works best and is tested with the current hardware.
