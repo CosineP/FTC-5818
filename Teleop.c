@@ -11,7 +11,7 @@
 
 #include "library.c"
 
-// The RobotC naming. SUCKS. Fix this.
+// The RobotC naming. SUCKS. Fix this:
 
 // Joystick naming. Fix the order. Thank you.
 #define driver1LeftStickX joystick.joy1_x1
@@ -25,22 +25,32 @@
 #define driver2RightStickY joystick.joy2_y2
 
 // Button naming. Actual names. Thank you.
-#define driver1btnA joy1Btn(2)
-#define driver1btnB joy1Btn(3)
-#define driver1btnX joy1Btn(1)
-#define driver1btnY joy1Btn(4)
-#define driver1btnL2 joy1Btn(7)
-#define driver1btnR2 joy1Btn(8)
+#define driver1BtnA joy1Btn(2)
+#define driver1BtnB joy1Btn(3)
+#define driver1BtnX joy1Btn(1)
+#define driver1BtnY joy1Btn(4)
+#define driver1BtnL2 joy1Btn(7)
+#define driver1BtnR2 joy1Btn(8)
 
-#define driver2btnA joy2Btn(2)
-#define driver2btnB joy2Btn(3)
-#define driver2btnX joy2Btn(1)
-#define driver2btnY joy2Btn(4)
-#define driver2btnL2 joy2Btn(8)
-#define driver2btnR2 joy2Btn(8)
+#define driver2BtnA joy2Btn(2)
+#define driver2BtnB joy2Btn(3)
+#define driver2BtnX joy2Btn(1)
+#define driver2BtnY joy2Btn(4)
+#define driver2BtnL2 joy2Btn(8)
+#define driver2BtnR2 joy2Btn(8)
+
+#define driver1HatUp joy1_TopHat >= 7 || (joy1_TopHat <= 1 && joy1_TopHat != -1)
+#define driver1HatDown joy1_TopHat >= 3 && joy1_TopHat <= 5
+#define driver1HatRight joy1_TopHat >= 1 && joy1_TopHat <= 3
+#define driver1HatLeft joy1_TopHat >= 5 && joy1_TopHat <= 7
+
+#define driver2HatUp joy2_TopHat >= 7 || (joy2_TopHat <= 2 && joy2_TopHat != -2)
+#define driver2HatDown joy2_TopHat >= 3 && joy2_TopHat <= 5
+#define driver2HatRight joy2_TopHat >= 2 && joy2_TopHat <= 3
+#define driver2HatLeft joy2_TopHat >= 5 && joy2_TopHat <= 7
 
 
-// Teleop-only "library" functions
+// Teleop-only "library" functions:
 
 // Exponential function to map to the joystickValue
 int joystickToMotor(int joystickValue)
@@ -62,11 +72,25 @@ int joystickToMotor(int joystickValue)
 
 }
 
-// Reads
+// Reads button values to modify a motor value
 int motorModifiers(int motorValue)
 {
 
-	//
+	if (driver1BtnR2 || driver2BtnR2)
+	{
+		// R2 to slow /everything/ down to half
+		motorValue /= 2;
+	}
+
+	return motorValue;
+
+}
+
+// Takes a joystick value, exponents it, and applies modifiers
+int fullMotorValue(int joystickValue)
+{
+
+	return motorModifiers(joystickToMotor(joystickValue));
 
 }
 
@@ -74,10 +98,9 @@ int motorModifiers(int motorValue)
 task main()
 {
 
-	// Programwide variables
-	int emergencyShutdown = false;
+	// Programwide variables:
 
-	// Servo initialization
+	// Servo initialization:
 
 	waitForStart();
 
@@ -86,17 +109,18 @@ task main()
 
 		getJoystickSettings(joystick);
 
-		// Each loop cycle code goes here (eg joystick driving)
+		// Each loop cycle code goes here (eg joystick driving):
 
-		/* Joystick: Driving layout
+		/* Joystick 1: Driving layout
 		 * Analog sticks: Tankdrive
-		 * Arrow up/down: Lift control
+		 * Hat up/down: Lift control
 		 * Buttons for Scoop
 		 */
 
-		/* Joystick: Lift layout
+		/* Joystick 2: Lift layout
 		 * Analog stick 1: Lift
 		 * Analog stick 2: Scoop
+		 * Hat for Arcade Drive
 		 */
 
 		/* Both Joysticks:
@@ -104,9 +128,37 @@ task main()
 		 * R2 for half-speed everything
 		 */
 
+		// Driving Layout (Joystick 1)
+
 		// Tank Drive
-		setLeft(joystickToMotor(driver1LeftStickY));
-		setRight(joystickToMotor(driver1RightStickY));
+		setLeft(fullMotorValue(driver1LeftStickY));
+		setRight(fullMotorValue(driver1RightStickY));
+
+		// Lift Hat
+		const int liftSpeed = 80;
+		motor[lift] = liftSpeed * (driver1HatUp - driver1HatDown);
+
+		// Scoop buttons
+		const int scoopSpeed = 90;
+		motor[scoop] = scoopSpeed * (driver1BtnX - driver1BtnY);
+
+		// Lift Layout (Joystick 2)
+
+		// Lift
+		motor[lift] = fullMotorValue(driver2LeftStickY);
+
+		// Scoop
+		motor[scoop] = fullMotorValue(driver2RightStickY);
+
+		// Emergency Shutdown
+		if (driver1BtnA || driver2BtnA)
+		{
+			setLeft(0);
+			setRight(0);
+			motor[lift] = 0;
+			motor[scoop] = 0;
+			break;
+		}
 
 	}
 
