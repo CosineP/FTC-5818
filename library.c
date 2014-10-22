@@ -1,4 +1,4 @@
-// 
+// Functions that are used in both teleop and anonymous mode
 
 #include "JoystickDriver.c"
 
