@@ -12,6 +12,7 @@ task main()
 	const int maxSpeed = 80;
 
 	bool wentForwardAlready = false;
+	bool hasArrived = false;
 
 	motor[left] = maxSpeed;
 	motor[right] = maxSpeed;
@@ -26,13 +27,13 @@ task main()
 
   while(true)
   {
-
 		int ir[8];
 
     HTIRS2readAllDCStrength(HTIRS, ir[1], ir[2], ir[3], ir[4], ir[5]);
 
     int direction = HTIRS2readDCDir(HTIRS);
 
+    // These variables are used only once, because RobotC can't hang
     int flipLeft  = ((direction < 5) ? -1 : 1);
     int flipRight = ((direction > 5) ? -1 : 1);
 		motor[left] = maxSpeed * flipLeft;
@@ -67,5 +68,15 @@ task main()
     displayTextLine(6, "ir4: %3d", ir[4]);
     displayTextLine(7, "ir5: %3d", ir[5]);
 
+		for (i = 1; i <= 5; i++)
+		{
+			if (ir[i] > 120) hasArrived = true;
+		}
+
+		if (hasArrived)
+		{
+			eraseDisplay();
+			displayCenteredBigTextLine("YOU HAVE ARRIVED AT YOUR DESTINATION");
+		}
   }
 }
