@@ -11,7 +11,7 @@ int ir[8];
 
 bool hasArrived()
 {
-	const int arrivedThreshold = 105;
+	const int arrivedThreshold = 110;
 	for (int i = 1; i <= 5; i++)
 	{
 		if (ir[i] > arrivedThreshold) return true;
@@ -57,7 +57,8 @@ task main()
 				else
 				{
 					motor[left] = lastLeft * maxSpeed;
-					motor[right] = -1 * lastLeft * maxSpeed;
+					int robotCSucks = lastLeft * maxSpeed;
+					motor[right] = -1 * robotCSucks;
 				}
 			}
 			else
@@ -81,7 +82,7 @@ task main()
 					motor[left] = maxSpeed;
 					motor[right] = maxSpeed;
 					clearTimer(T1);
-					while (!hasArrived() && time1[T1] < 2500)	{}
+					while (!hasArrived() && time1[T1] < 1250)	{}
 				}
 			}
 
@@ -91,8 +92,8 @@ task main()
 			displayTextLine(3, "ir1: %3d", ir[1]);
 			displayTextLine(4, "ir2: %3d", ir[2]);
 			displayTextLine(5, "ir3: %3d", ir[3]);
-			displayTextLine(6, "ir4: %3d", ir[4]);
-			displayTextLine(7, "ir5: %3d", ir[5]);
+			displayTextLine(6, "lol: %3d", motor[left]);
+			displayTextLine(7, "ror: %3d", motor[right]);
 
 		}
 

@@ -102,16 +102,6 @@ task main()
 					while (!hasArrived() && time1[T1] < 3000)	{}
 				}
 			}
-
-			eraseDisplay();
-			displayTextLine(0,"HT IR Seeker");
-			displayTextLine(2, "dir: %3d", direction);
-			displayTextLine(3, "ir1: %3d", ir[1]);
-			displayTextLine(4, "ir2: %3d", ir[2]);
-			displayTextLine(5, "ir3: %3d", ir[3]);
-			displayTextLine(6, "ir4: %3d", ir[4]);
-			displayTextLine(7, "ir5: %3d", ir[5]);
-
 		}
 
 		if (hasArrived())
@@ -119,11 +109,7 @@ task main()
 			setLeft(0);
 			setRight(0);
 			// Todo: Lift, dump, celebrate
-			eraseDisplay();
-			displayTextLine(3, "YOU HAVE ARRIVED");
-			displayTextLine(4, "AT YOUR");
-			displayTextLine(5, "DESTINATION");
-			wait1Msec(100);
+			
 		}
 
 	}
