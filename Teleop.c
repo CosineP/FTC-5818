@@ -39,15 +39,15 @@
 #define driver2BtnL2 joy2Btn(8)
 #define driver2BtnR2 joy2Btn(8)
 
-#define driver1HatUp joy1_TopHat >= 7 || (joy1_TopHat <= 1 && joy1_TopHat != -1)
-#define driver1HatDown joy1_TopHat >= 3 && joy1_TopHat <= 5
-#define driver1HatRight joy1_TopHat >= 1 && joy1_TopHat <= 3
-#define driver1HatLeft joy1_TopHat >= 5 && joy1_TopHat <= 7
+#define driver1DPadUp joy1_TopHat >= 7 || (joy1_TopHat <= 1 && joy1_TopHat != -1)
+#define driver1DPadDown joy1_TopHat >= 3 && joy1_TopHat <= 5
+#define driver1DPadRight joy1_TopHat >= 1 && joy1_TopHat <= 3
+#define driver1DPadLeft joy1_TopHat >= 5 && joy1_TopHat <= 7
 
-#define driver2HatUp joy2_TopHat >= 7 || (joy2_TopHat <= 2 && joy2_TopHat != -2)
-#define driver2HatDown joy2_TopHat >= 3 && joy2_TopHat <= 5
-#define driver2HatRight joy2_TopHat >= 2 && joy2_TopHat <= 3
-#define driver2HatLeft joy2_TopHat >= 5 && joy2_TopHat <= 7
+#define driver2DPadUp joy2_TopHat >= 7 || (joy2_TopHat <= 2 && joy2_TopHat != -2)
+#define driver2DPadDown joy2_TopHat >= 3 && joy2_TopHat <= 5
+#define driver2DPadRight joy2_TopHat >= 2 && joy2_TopHat <= 3
+#define driver2DPadLeft joy2_TopHat >= 5 && joy2_TopHat <= 7
 
 
 // Teleop-only "library" functions:
@@ -136,7 +136,7 @@ task main()
 
 		// Lift Hat
 		const int liftSpeed = 80;
-		motor[lift] = liftSpeed * (driver1HatUp - driver1HatDown);
+		motor[lift] = liftSpeed * (driver1DPadUp - driver1DPadDown);
 
 		// Scoop buttons
 		const int scoopSpeed = 90;
