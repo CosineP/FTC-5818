@@ -13,3 +13,9 @@ void setRight(int speed)
 	motor[rightBack] = speed;
 	motor[rightFront] = speed;
 }
+
+void setLift(int speed)
+{
+	motor[liftLeft] = speed;
+	motor[liftRight] = speed;
+}
