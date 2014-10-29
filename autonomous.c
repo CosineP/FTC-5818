@@ -37,6 +37,14 @@ void moveMotorTurns(int motorType, int speed, float turns)
 	motor[motorType] = 0;
 }
 
+void liftHeight(int height)
+{
+	// All Measurements in centimeters
+	// Todo: Warning: Circumference is subject to change
+	const int spoolCircumference = 6;
+	moveMotorTurns(liftLeft / height)
+}
+
 task main()
 {
 
@@ -109,7 +117,7 @@ task main()
 			setLeft(0);
 			setRight(0);
 			// Todo: Lift, dump, celebrate
-			
+
 		}
 
 	}
