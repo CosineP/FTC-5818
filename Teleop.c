@@ -26,6 +26,13 @@
 #define driver2RightStickY joystick.joy2_y2
 
 // Button naming. Actual names. Thank you.
+
+/*
+ *    Y
+ *  X   B
+ *    A
+ */
+
 #define driver1BtnA joy1Btn(2)
 #define driver1BtnB joy1Btn(3)
 #define driver1BtnX joy1Btn(1)
@@ -121,7 +128,8 @@ task main()
 		/* Joystick 2: Lift layout
 		 * Analog stick 1: Lift
 		 * Analog stick 2: Scoop
-		 * Hat for Arcade Drive
+		 * DPad for Arcade Drive
+		 *
 		 */
 
 		/* Both Joysticks:
@@ -135,7 +143,7 @@ task main()
 		setLeft(fullMotorValue(driver1LeftStickY));
 		setRight(fullMotorValue(driver1RightStickY));
 
-		// Lift Hat
+		// Lift using the DPad
 		const int liftSpeed = 80;
 		setLift(liftSpeed * (driver1DPadUp - driver1DPadDown));
 
@@ -147,6 +155,9 @@ task main()
 
 		// Lift
 		setLift(fullMotorValue(driver2LeftStickY));
+
+		// Lift to Height of Goals
+		
 
 		// Scoop
 		motor[scoop] = fullMotorValue(driver2RightStickY);
