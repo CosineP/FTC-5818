@@ -4,13 +4,18 @@
 
 // Library variables
 
-const float spoolCircumference = 6;
+const float spoolCircumference = 7.54; // In centimeters
 
 const int liftAutoSpeed = 75;
 
-const int amountAboveTubes = 5;
+const int amountAboveTubes = 3; // Everything is in centimeters.
+
+const float zeroLift = 0.5; // Going below zero would be disasterous, so we don't even wanna get close. Centimeters.
 
 // Library functions
+
+int turnsToEncoders(float turns) { return turns * 1440; }
+float encodersToTurns(int encoders) { return encoders / 1440.0; }
 
 void syncLift(void)
 {
@@ -29,8 +34,16 @@ void syncLift(void)
 	}
 }
 
-void setLift(int velocity)
+void setLift(int velocity, bool checkIfBottom = true)
 {
+	if (checkIfBottom)
+	{
+		while (encodersToTurns(nMotorEncoder[liftLeft]) * spoolCircumference < zeroLift)
+		{
+			motor[liftLeft] = liftAutoSpeed;
+			motor[liftRight] = liftAutoSpeed;
+		}
+	}
 	motor[liftLeft] = velocity;
 	motor[liftRight] = velocity;
 	syncLift();
@@ -38,11 +51,8 @@ void setLift(int velocity)
 
 void zeroEncoders(void)
 {
-	nMotorEncoder[liftLeft] = 0;
-	nMotorEncoder[liftRight] = 0;
+	nMotorEncoder[liftLeft] = turnsToEncoders(zeroLift / spoolCircumference);
+	nMotorEncoder[liftRight] = nMotorEncoder[liftLeft];
 	nMotorEncoder[left] = 0;
 	nMotorEncoder[right] = 0;
 }
-
-int turnsToEncoders(float turns) { return turns * 1440; }
-float encodersToTurns(int encoders) { return encoders / 1440.0; }

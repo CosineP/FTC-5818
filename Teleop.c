@@ -33,6 +33,8 @@
 #define driver1BtnB joy1Btn(3)
 #define driver1BtnX joy1Btn(1)
 #define driver1BtnY joy1Btn(4)
+#define driver1BtnL1 joy1Btn(5)
+#define driver1BtnR1 joy1Btn(6)
 #define driver1BtnL2 joy1Btn(7)
 #define driver1BtnR2 joy1Btn(8)
 
@@ -40,7 +42,9 @@
 #define driver2BtnB joy2Btn(3)
 #define driver2BtnX joy2Btn(1)
 #define driver2BtnY joy2Btn(4)
-#define driver2BtnL2 joy2Btn(8)
+#define driver2BtnL1 joy2Btn(5)
+#define driver2BtnR1 joy2Btn(6)
+#define driver2BtnL2 joy2Btn(7)
 #define driver2BtnR2 joy2Btn(8)
 
 #define driver1DPadUp (joy1_TopHat >= 7 || (joy1_TopHat <= 1 && joy1_TopHat != -1))
@@ -70,7 +74,9 @@ int joystickToMotor(int joystickValue)
 	else
 	{
 		// We will play the piccolo
-		motorValue = ((pow(1.05, abs(joystickValue)) - 1) / (490.954203 - minimumValue) / 100 + minimumValue) * (joystickValue < 0 ? -1 : 1); // That constant is 1.05^127
+		// Todo: Is the max really 61.5?!
+		const int motorMax = 61.5;
+		motorValue = ((pow(1.05, abs(joystickValue)) - 1) / (490.954203 - minimumValue) / motorMax + minimumValue) * (joystickValue < 0 ? -1 : 1); // That constant is 1.05^127
 	}
 	return motorValue;
 
@@ -120,53 +126,68 @@ task main()
 
 		// Each loop cycle code goes here (eg joystick driving):
 
-		/* Joystick 1: Driving layout
+		/* Driver 1: Driving layout
 		 * Analog sticks: Tankdrive
 		 * Hat up/down: Lift control
 		 * Buttons for Scoop
 		 */
 
-		/* Joystick 2: Lift layout
-		 * Analog stick 1: Lift
-		 * Analog stick 2: Scoop
+		/* Driver 2: Lift layout
+		 * Analog stick left: Lift
+		 * Analog stick right: Scoop
 		 * DPad for Arcade Drive
 		 * Lift: A->bottom, X->90, Y->60, B->30
+		 * L1 for screw da lift limit on the bottom
+		 * L2 for zero encoders
 		 */
 
 		/* Both Joysticks:
-		 * Button A for emergency shutdown
+		 * R1 for emergency shutdown
 		 * R2 for half-speed everything
 		 */
 
-		// Driving Layout (Joystick 1)
+		// Driving Layout (Driver 1)
 
 		// Tank drive
 		motor[left] = fullMotorValue(driver1LeftStickY);
 		motor[right] = fullMotorValue(driver1RightStickY);
 
 		// Lift using the DPad
-		const int liftSpeed = 80;
-		setLift(liftSpeed * (driver1DPadUp - driver1DPadDown));
+		setLift(liftAutoSpeed * (driver1DPadUp - driver1DPadDown));
 
 		// Scoop buttons
 		const int scoopSpeed = 90;
 		motor[scoop] = scoopSpeed * (driver1BtnX - driver1BtnY);
 
-		// Lift Layout (Joystick 2)
+		// Lift Layout (Driver 2)
+
+		bool stopAtBottom = true;
+
+		// Screw the limit of the lift that you can't go all the way down
+		// Used if we have to emergency shutdown without lowering the lift
+		if (driver2BtnL1)
+		{
+			stopAtBottom = false;
+		}
+
+		// Reset encoders if it started in a bad place
+		if (driver2BtnL2)
+		{
+			zeroEncoders();
+		}
 
 		// Lift
 		if (movingLiftTo = -1)
 		{
 			// Manual lift
-			setLift(fullMotorValue(driver2LeftStickY));
+			setLift(fullMotorValue(driver2LeftStickY), stopAtBottom);
 		}
 		else
 		{
 			// Auto lift
 			syncLift();
 			float currentHeight = encodersToTurns(nMotorEncoder[liftLeft]) * spoolCircumference;
-			const float acceptableAsZero = 1; // Going below zero would be disasterous, so we don't even wanna get close
-			if (currentHeight > movingLiftTo || (movingLiftTo == 0 && currentHeight <= acceptableAsZero))
+			if (currentHeight > movingLiftTo || (movingLiftTo == 0 && currentHeight <= zeroLift))
 			{
 				// We have completed our mission
 				setLift(0);
@@ -199,8 +220,10 @@ task main()
 		// Scoop
 		motor[scoop] = fullMotorValue(driver2RightStickY);
 
+		// Both drivers
+
 		// Emergency shutdown
-		if (driver1BtnA || driver2BtnA)
+		if (driver1BtnR1 || driver2BtnR1)
 		{
 			motor[left] = 0;
 			motor[right] = 0;
