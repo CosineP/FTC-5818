@@ -4,7 +4,7 @@
 
 // Library variables
 
-const float spoolCircumference = 7.54; // In centimeters
+const float spoolCircumference = 6.91; // In centimeters
 
 const int liftAutoSpeed = 75;
 
