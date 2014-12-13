@@ -6,9 +6,9 @@
 
 const float spoolCircumference = 6.91; // In centimeters
 
-const int liftAutoSpeed = 75;
+const int liftAutoSpeed = 75; // TODO: Make this number good
 
-const int amountAboveTubes = 3; // Everything is in centimeters.
+const int amountAboveTubes = 3; // Everything is in centimeters. TODO: Make not arbitrary
 
 const float zeroLift = 0.5; // Going below zero would be disasterous, so we don't even wanna get close. Centimeters.
 
@@ -38,11 +38,12 @@ void setLift(int velocity, bool checkIfBottom = true)
 {
 	if (checkIfBottom)
 	{
-		while (encodersToTurns(nMotorEncoder[liftLeft]) * spoolCircumference < zeroLift)
-		{
-			motor[liftLeft] = liftAutoSpeed;
-			motor[liftRight] = liftAutoSpeed;
-		}
+		//while (encodersToTurns(nMotorEncoder[liftLeft]) * spoolCircumference < zeroLift)
+		//{
+		//	motor[liftLeft] = liftAutoSpeed;
+		//	motor[liftRight] = liftAutoSpeed;
+		//}
+		// TODO: Check if bottom
 	}
 	motor[liftLeft] = velocity;
 	motor[liftRight] = velocity;
