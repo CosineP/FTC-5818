@@ -17,7 +17,8 @@ int ir[6];
 // Check whether we arrived at the IR beacon
 bool hasArrived(void)
 {
-	const int arrivedThreshold = 40; // The value the IR beacon gets when we arrive TODO: Make not arbitrary.
+	return false; // TODO: When we have 120, make this function available again
+	const int arrivedThreshold = 28; // The value the IR beacon gets when we arrive TODO: Make not arbitrary.
 	for (int i = 1; i <= 5; i++)
 	{
 		if (ir[i] > arrivedThreshold) return true;
@@ -51,7 +52,7 @@ task main()
 	// Make sure we pick of the IR so go forward mann
 	motor[left] = maxSpeed;
 	motor[right] = maxSpeed;
-	//wait1Msec(2500); // TODO: Correct # for 200000 points
+	wait1Msec(2400); // TODO: Correct # for 200000 points
 	motor[left] = 0;
 	motor[right] = 0;
 
@@ -90,11 +91,11 @@ task main()
 				if (direction < 5)
 				{
 					motor[left] = maxSpeed / 4;
-					motor[right] = maxSpeed * 1;
+					motor[right] = maxSpeed;
 				}
 				else if (direction > 5)
 				{
-					motor[left] = maxSpeed * 1;
+					motor[left] = maxSpeed;
 					motor[right] = maxSpeed / 4;
 				}
 				else if (direction == 5)
