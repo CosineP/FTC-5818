@@ -17,8 +17,7 @@ int ir[6];
 // Check whether we arrived at the IR beacon
 bool hasArrived(void)
 {
-	return false; // TODO: When we have 120, make this function available again
-	const int arrivedThreshold = 28; // The value the IR beacon gets when we arrive TODO: Make not arbitrary.
+	const int arrivedThreshold = 28; // The value the IR beacon gets when we arrive TODO: Make less arbitrary.
 	for (int i = 1; i <= 5; i++)
 	{
 		if (ir[i] > arrivedThreshold) return true;
@@ -107,28 +106,39 @@ task main()
 				}
 			}
 
-			eraseDisplay();
-			displayTextLine(0,"HT IR Seeker");
-			displayTextLine(2, "dir: %3d", direction);
-			displayTextLine(3, "ir1: %3d", ir[1]);
-			displayTextLine(4, "ir2: %3d", ir[2]);
-			displayTextLine(5, "ir3: %3d", ir[3]);
-			displayTextLine(6, "lol: %3d", motor[left]);
-			displayTextLine(7, "ror: %3d", motor[right]);
 		}
 
 		if (hasArrived())
 		{
-			motor[left] = 0;
-			motor[right] = 0;
-			const int height = 120 + amountAboveTubes; // So that we have room for dumping BALLS
-			const int ballSpittingOutTime = 750;
-			liftHeight(height);
-			motor[scoop] = -liftAutoSpeed;
-			wait1Msec(ballSpittingOutTime);
-			motor[scoop] = 0;
-			liftHeight(-height);
-			hasArrived = false;
+
+			// TODO: Get 120 and uncomment this shit
+			//motor[left] = 0;
+			//motor[right] = 0;
+			//const int height = 120 + amountAboveTubes; // So that we have room for dumping BALLS
+			//const int ballSpittingOutTime = 750;
+			//liftHeight(height);
+			//motor[scoop] = -liftAutoSpeed;
+			//wait1Msec(ballSpittingOutTime);
+			//motor[scoop] = 0;
+			//liftHeight(-height);
+			//break;
+
+			motor[left] = -maxSpeed;
+			motor[right] = -maxSpeed;
+			wait1MSec(700);
+			motor[left] = maxSpeed;
+			motor[right] = -maxSpeed;
+			wait1MSec(650);
+			motor[left] = maxSpeed;
+			motor[right] = maxSpeed;
+			wait1MSec(500);
+			motor[left] = -maxSpeed;
+			motor[right] = maxSpeed;
+			wait1MSec(650);
+			motor[left] = maxSpeed;
+			motor[right] = maxSpeed;
+			wait1MSec(2250);
+
 		}
 
 	}

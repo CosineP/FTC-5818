@@ -19,9 +19,8 @@ float encodersToTurns(int encoders) { return encoders / 1440.0; }
 
 void syncLift(void)
 {
-	return; // TODO: Don't.
 	int speed = motor[liftLeft];
-	//if (speed != 0)
+	if (speed != 0) // TODO: Is this neccessary
 	{
 		while (nMotorEncoder[liftLeft] != nMotorEncoder[liftRight])
 		{
@@ -39,12 +38,11 @@ void setLift(int velocity, bool checkIfBottom = true)
 {
 	if (checkIfBottom)
 	{
-		//while (encodersToTurns(nMotorEncoder[liftLeft]) * spoolCircumference < zeroLift)
-		//{
-		//	motor[liftLeft] = liftAutoSpeed;
-		//	motor[liftRight] = liftAutoSpeed;
-		//}
-		// TODO: Check if bottom
+		while (encodersToTurns(nMotorEncoder[liftLeft]) * spoolCircumference < zeroLift)
+		{
+			motor[liftLeft] = liftAutoSpeed;
+			motor[liftRight] = liftAutoSpeed;
+		}
 	}
 	motor[liftLeft] = velocity;
 	motor[liftRight] = velocity;

@@ -58,7 +58,6 @@ int joystickToMotor(int joystickValue)
 	else
 	{
 		// We will play the piccolo
-		// TODO: Is the max really 61.5?!
 		const int motorMax = 100;
 		int backwards = joystickValue < 0 ? -1 : 1;
 		motorValue = (pow(1.05, abs(joystickValue)) / pow(1.05, 127)
@@ -161,11 +160,8 @@ task main()
 		{
 			// Manual lift
 			int liftValue = fullMotorValue(driver2LeftStickY);
-			if (liftValue == 0)
-			{
-				setLift(liftAutoSpeed);
-				while (nMotorEncoder[liftLeft] < lastEncoder) {}
-			}
+			setLift(liftAutoSpeed);
+			while (nMotorEncoder[liftLeft] < lastEncoder && liftValue == 0) {}
 			setLift(liftValue, stopAtBottom);
 			lastEncoder = nMotorEncoder[liftLeft];
 		}
