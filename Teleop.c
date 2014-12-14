@@ -50,8 +50,8 @@ int joystickToMotor(int joystickValue)
 
 	return joystickValue; // TODO: Remove;
 	int motorValue;
-	const int minimumValue = 4; // This value high = less control, less whining; this value low = more fine control, more whining, more magic blue smoke (out of 100)
-	const int joystickZero = 5; // Joysticks are very sensitive; it may be a bit off zero when they're not trying to move anything anyway (out of 127)
+	const int minimumValue = 5; // This value high = less control, less whining; this value low = more fine control, more whining, more magic blue smoke (out of 100)
+	const int joystickZero = 7; // Joysticks are very sensitive; it may be a bit off zero when they're not trying to move anything anyway (out of 127)
 	if (abs(joystickValue) < joystickZero)
 	{
 		motorValue = 0;
@@ -97,6 +97,10 @@ task main()
 
 	// In centimeters, -1 = we're not trying to move
 	int movingLiftTo = -1;
+
+	// If we are not going down, we do not want to go down. If this encoder starts dropping, we panic.
+	// At the disco. And we go up, until we are back to the original.
+	int lastEncoder = nMotorEncoder[liftLeft];
 
 	// Servo / program initialization:
 
@@ -155,7 +159,14 @@ task main()
 		if (movingLiftTo == -1)
 		{
 			// Manual lift
-			setLift(fullMotorValue(driver2LeftStickY), stopAtBottom);
+			liftValue = fullMotorValue(driver2LeftStickY);
+			if (liftValue == 0)
+			{
+				setLift(liftAutoSpeed);
+				while (nMotorEncoder[liftLeft] < lastEncoder) {}
+			}
+			setLift(liftValue, stopAtBottom);
+			lastEncoder = nMotorEncoder[liftLeft];
 		}
 		else
 		{

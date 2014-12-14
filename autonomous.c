@@ -126,7 +126,9 @@ task main()
 			liftHeight(height);
 			motor[scoop] = -liftAutoSpeed;
 			wait1Msec(ballSpittingOutTime);
+			motor[scoop] = 0;
 			liftHeight(-height);
+			hasArrived = false;
 		}
 
 	}
