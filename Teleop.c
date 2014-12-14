@@ -48,9 +48,8 @@
 int joystickToMotor(int joystickValue)
 {
 
-	return joystickValue; // TODO: Remove;
 	int motorValue;
-	const int minimumValue = 5; // This value high = less control, less whining; this value low = more fine control, more whining, more magic blue smoke (out of 100)
+	const int minimumValue = 4; // This value high = less control, less whining; this value low = more fine control, more whining, more magic blue smoke (out of 100)
 	const int joystickZero = 7; // Joysticks are very sensitive; it may be a bit off zero when they're not trying to move anything anyway (out of 127)
 	if (abs(joystickValue) < joystickZero)
 	{
@@ -60,8 +59,10 @@ int joystickToMotor(int joystickValue)
 	{
 		// We will play the piccolo
 		// TODO: Is the max really 61.5?!
-		const int motorMax = 61.5;
-		motorValue = ((pow(1.05, abs(joystickValue)) - 1) / (490.954203 - minimumValue) / motorMax + minimumValue) * (joystickValue < 0 ? -1 : 1); // That constant is 1.05^127
+		const int motorMax = 100;
+		int backwards = joystickValue < 0 ? -1 : 1;
+		motorValue = (pow(1.05, abs(joystickValue)) / pow(1.05, 127)
+			* (motorMax - minimumValue) + minimumValue) * backwards;
 	}
 	return motorValue;
 
@@ -159,7 +160,7 @@ task main()
 		if (movingLiftTo == -1)
 		{
 			// Manual lift
-			liftValue = fullMotorValue(driver2LeftStickY);
+			int liftValue = fullMotorValue(driver2LeftStickY);
 			if (liftValue == 0)
 			{
 				setLift(liftAutoSpeed);

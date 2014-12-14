@@ -19,6 +19,7 @@ float encodersToTurns(int encoders) { return encoders / 1440.0; }
 
 void syncLift(void)
 {
+	return; // TODO: Don't.
 	int speed = motor[liftLeft];
 	//if (speed != 0)
 	{
