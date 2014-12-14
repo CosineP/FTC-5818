@@ -28,8 +28,9 @@ void syncLift(void)
 		{
 			leftBehind = !leftBehind;
 		}
-		motor[liftLeft] = !leftBehind * speed + leftBehind * speed / 2;
-		motor[liftRight] = leftBehind * speed + !leftBehind * speed / 2;
+		const float lagBehind = 0.75;
+		motor[liftLeft] = !leftBehind * speed + leftBehind * speed * lagBehind;
+		motor[liftRight] = leftBehind * speed + !leftBehind * speed * lagBehind;
 	}
 }
 
