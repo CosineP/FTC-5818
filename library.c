@@ -20,23 +20,22 @@ float encodersToTurns(int encoders) { return encoders / 1440.0; }
 void syncLift(void)
 {
 	int speed = motor[liftLeft];
-	if (speed != 0) // TODO: Is this neccessary
+	if (speed != 0)
 	{
-		while (nMotorEncoder[liftLeft] != nMotorEncoder[liftRight])
+		// We're slightly lopsided, better fix this
+		bool leftBehind = nMotorEncoder[liftLeft] > nMotorEncoder[liftRight];
+		if (speed < 0)
 		{
-			// We're slightly lopsided, better fix this
-			bool leftAboveRight = nMotorEncoder[liftLeft] > nMotorEncoder[liftRight];
-			motor[liftLeft] = !leftAboveRight * speed;
-			motor[liftRight] = leftAboveRight * speed;
+			leftBehind = !leftBehind;
 		}
-		motor[liftLeft] = speed;
-		motor[liftRight] = speed;
+		motor[liftLeft] = !leftBehind * speed + leftBehind * speed / 2;
+		motor[liftRight] = leftBehind * speed + !leftBehind * speed / 2;
 	}
 }
 
 void setLift(int velocity, bool checkIfBottom = true)
 {
-	if (checkIfBottom)
+	if (checkIfBottom && false)
 	{
 		while (encodersToTurns(nMotorEncoder[liftLeft]) * spoolCircumference < zeroLift)
 		{

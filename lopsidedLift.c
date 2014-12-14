@@ -10,7 +10,6 @@
 
 #include "library.c"
 
-// Joystick naming. Fix the order. Thank you.
 #define driver1LeftStickX joystick.joy1_x1
 #define driver1LeftStickY joystick.joy1_y1
 #define driver1RightStickX joystick.joy1_x2
@@ -20,8 +19,6 @@
 #define driver2LeftStickY joystick.joy2_y1
 #define driver2RightStickX joystick.joy2_x2
 #define driver2RightStickY joystick.joy2_y2
-
-// Button naming. Actual names. Thank you.
 
 #define driver1BtnA joy1Btn(2)
 #define driver1BtnB joy1Btn(3)
@@ -42,38 +39,32 @@
 #define driver2BtnR2 joy2Btn(8)
 
 
-// Teleop-only "library" functions:
-
-// Exponential function to map to the joystickValue
 int joystickToMotor(int joystickValue)
 {
 
-	return joystickValue; // TODO: Remove;
 	int motorValue;
-	const int minimumValue = 4; // This value high = less control, less whining; this value low = more fine control, more whining, more magic blue smoke (out of 100)
-	const int joystickZero = 5; // Joysticks are very sensitive; it may be a bit off zero when they're not trying to move anything anyway (out of 127)
+	const int minimumValue = 4;
+	const int joystickZero = 7;
 	if (abs(joystickValue) < joystickZero)
 	{
 		motorValue = 0;
 	}
 	else
 	{
-		// We will play the piccolo
-		// TODO: Is the max really 61.5?!
-		const int motorMax = 61.5;
-		motorValue = ((pow(1.05, abs(joystickValue)) - 1) / (490.954203 - minimumValue) / motorMax + minimumValue) * (joystickValue < 0 ? -1 : 1); // That constant is 1.05^127
+		const int motorMax = 100;
+		int backwards = joystickValue < 0 ? -1 : 1;
+		motorValue = (pow(1.05, abs(joystickValue)) / pow(1.05, 127)
+			* (motorMax - minimumValue) + minimumValue) * backwards;
 	}
 	return motorValue;
 
 }
 
-// Reads button values to modify a motor value
 int motorModifiers(int motorValue)
 {
 
 	if (driver1BtnR2 || driver2BtnR2)
 	{
-		// R2 to slow everything down to half
 		motorValue /= 2;
 	}
 
@@ -81,7 +72,6 @@ int motorModifiers(int motorValue)
 
 }
 
-// Takes a joystick value, exponents it, and applies modifiers
 int fullMotorValue(int joystickValue)
 {
 
@@ -93,12 +83,7 @@ int fullMotorValue(int joystickValue)
 task main()
 {
 
-	// Programwide variables:
-
-	// In centimeters, -1 = we're not trying to move
 	int movingLiftTo = -1;
-
-	// Servo / program initialization:
 
 	zeroEncoders();
 
@@ -109,101 +94,23 @@ task main()
 
 		getJoystickSettings(joystick);
 
-		// Each loop cycle code goes here (eg joystick driving):
-
-		/* Driver 1: Driving layout
-		 * Analog sticks: Tankdrive
-		 */
-
-		/* Driver 2: Lift layout
-		 * Analog stick left: Lift
-		 * Analog stick right: Scoop
-		 * Lift: A->bottom, X->90, Y->60, B->30
-		 * L1 for screw da lift limit on the bottom
-		 * L2 for zero encoders
-		 */
-
-		/* Both Joysticks:
-		 * R1 for emergency shutdown
-		 * R2 for half-speed everything
-		 */
-
-		// Driving Layout (Driver 1)
-
-		// Tank drive
-		motor[left] = fullMotorValue(driver1LeftStickY);
-		motor[right] = fullMotorValue(driver1RightStickY);
-
-		// Lift Layout (Driver 2)
-
 		bool stopAtBottom = true;
 
-		// Screw the limit of the lift that you can't go all the way down
-		// Used if we have to emergency shutdown without lowering the lift
 		if (driver2BtnL1)
 		{
 			stopAtBottom = false;
 		}
 
-		// Reset encoders if it started in a bad place
 		if (driver2BtnL2)
 		{
 			zeroEncoders();
 		}
 
-		// Lift
-		if (movingLiftTo == -1)
-		{
-			// Manual lift
-			motor[liftLeft] = fullMotorValue(driver2LeftStickY);
-			motor[liftRight] = fullMotorValue(driver2RightStickY);
-			//setLift(fullMotorValue(driver2LeftStickY), stopAtBottom);
-		}
-		else
-		{
-			// Auto lift
-			syncLift();
-			float currentHeight = encodersToTurns(nMotorEncoder[liftLeft]) * spoolCircumference;
-			if (currentHeight > movingLiftTo || (movingLiftTo == 0 && currentHeight <= zeroLift))
-			{
-				// We have completed our mission
-				setLift(0);
-				movingLiftTo = -1;
-			}
-		}
+		motor[liftLeft] = fullMotorValue(driver2LeftStickY);
+		motor[liftRight] = fullMotorValue(driver2RightStickY);
 
-		// Buttons for moving lift automatically
-		// Warning: Using these buttons at any time without express approval
-		// of the KRPA (Kennebenk Roboticists Programmer Association)(r)
-		// AND the KKBA (Korean Koala Bears Association)(r)
-		// voids warranty of Lift (unitentional typo but relevant), the Universe, and Everything.
-		if (driver2BtnA)
-		{
-			setLift(-1 * liftAutoSpeed);
-			movingLiftTo = 0;
-		}
-		if (driver2BtnX)
-		{
-			setLift(liftAutoSpeed);
-			movingLiftTo = 90 + amountAboveTubes;
-		}
-		if (driver2BtnY)
-		{
-			setLift(liftAutoSpeed);
-			movingLiftTo = 60 + amountAboveTubes;
-		}
-		if (driver2BtnB)
-		{
-			setLift(liftAutoSpeed);
-			movingLiftTo = 30 + amountAboveTubes;
-		}
-
-		// Scoop
 		motor[scoop] = fullMotorValue(driver2RightStickY);
 
-		// Both drivers
-
-		// Emergency shutdown
 		if (driver1BtnR1 || driver2BtnR1)
 		{
 			motor[left] = 0;
