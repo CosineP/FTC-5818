@@ -40,6 +40,7 @@
 #define driver2BtnR1 joy2Btn(6)
 #define driver2BtnL2 joy2Btn(7)
 #define driver2BtnR2 joy2Btn(8)
+#define driver2BtnBack joy2Btn(9)
 
 
 // Teleop-only "library" functions:
@@ -97,6 +98,8 @@ task main()
 
 	// In centimeters, -1 = we're not trying to move
 	int movingLiftTo = -1;
+
+	bool asymLift = false;
 
 	// If we are not going down, we do not want to go down. If this encoder starts dropping, we panic.
 	// At the disco. And we go up, until we are back to the original.
@@ -162,13 +165,21 @@ task main()
 			int liftValue = fullMotorValue(driver2LeftStickY);
 			//setLift(liftAutoSpeed);
 			//while (nMotorEncoder[liftLeft] < lastEncoder && liftValue == 0) {}
-			setLift(liftValue, stopAtBottom);
+			if (!asymLift)
+			{
+				setLift(liftValue, stopAtBottom);
+			}
+			else
+			{
+				motor[liftLeft] = fullMotorValue(driver2LeftStickY);
+				motor[liftRight] = fullMotorValue(driver2RightStickY);
+			}
 			lastEncoder = nMotorEncoder[liftLeft];
 		}
 		else
 		{
 			// Auto lift
-			syncLift();
+			//syncLift();
 			float currentHeight = encodersToTurns(nMotorEncoder[liftLeft]) * spoolCircumference;
 			if (currentHeight > movingLiftTo || (movingLiftTo == 0 && currentHeight <= zeroLift))
 			{
@@ -204,8 +215,16 @@ task main()
 			movingLiftTo = 30 + amountAboveTubes;
 		}
 
+		// Asym lift for when everything goes wrong (sing like elsa)
+		if (driver2BtnBack)
+		{
+			asymLift = !asymLift;
+			// Avoid bouncing
+			wait1Msec(20);
+		}
+
 		// Scoop
-		motor[scoop] = fullMotorValue(driver2RightStickY);
+		motor[scoop] = fullMotorValue(driver2RightStickX);
 
 		// Both drivers
 

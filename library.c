@@ -36,7 +36,7 @@ void syncLift(void)
 
 void setLift(int velocity, bool checkIfBottom = true)
 {
-	if (checkIfBottom && false)
+	if (checkIfBottom)
 	{
 		while (encodersToTurns(nMotorEncoder[liftLeft]) * spoolCircumference < zeroLift)
 		{
