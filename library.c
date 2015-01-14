@@ -23,14 +23,14 @@ void syncLift(void)
 	if (speed != 0)
 	{
 		// We're slightly lopsided, better fix this
-		bool leftBehind = nMotorEncoder[liftLeft] > nMotorEncoder[liftRight];
+		bool rightBehind = nMotorEncoder[liftLeft] > nMotorEncoder[liftRight];
 		if (speed < 0)
 		{
-			leftBehind = !leftBehind;
+			rightBehind = !rightBehind;
 		}
 		const float lagBehind = 0.75;
-		motor[liftLeft] = !leftBehind * speed + leftBehind * speed * lagBehind;
-		motor[liftRight] = leftBehind * speed + !leftBehind * speed * lagBehind;
+		motor[liftLeft] = !rightBehind * speed + rightBehind * speed * lagBehind;
+		motor[liftRight] = rightBehind * speed + !rightBehind * speed * lagBehind;
 	}
 }
 

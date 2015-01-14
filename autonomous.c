@@ -21,7 +21,7 @@
 // Global variables
 int ir[6];
 
-// Check whether we arrived at the IR beacon
+// Check whether we arrived at the IR bacon
 bool hasArrived(void)
 {
 	const int arrivedThreshold = 25; // The value the IR beacon gets when we arrive TODO: Make less arbitrary.
@@ -86,8 +86,8 @@ task main()
 				}
 				else
 				{
-					motor[left] = maxSpeed;
-					motor[right] = -maxSpeed;
+					motor[left] = maxSpeed / 4;
+					motor[right] = -maxSpeed / 4;
 				}
 			}
 			else
@@ -118,7 +118,6 @@ task main()
 
 		if (hasArrived())
 		{
-
 			motor[left] = 0;
 			motor[right] = 0;
 			const int height = 120 + amountAboveTubes; // So that we have room for dumping BALLS
