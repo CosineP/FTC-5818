@@ -12,54 +12,34 @@ const int amountAboveTubes = 3; // Everything is in centimeters. TODO: Make not 
 
 const float zeroLift = 0.5; // Going below zero would be disasterous, so we don't even wanna get close. Centimeters.
 
+const float gearingRatio = 3.0/2;
+
 // Library functions
 
 int turnsToEncoders(float turns) { return turns * 1440; }
 float encodersToTurns(int encoders) { return encoders / 1440.0; }
 
-void syncLift(void)
-{
-	int speed = motor[liftLeft];
-	if (speed != 0)
-	{
-		// We're slightly lopsided, better fix this
-		bool rightBehind = nMotorEncoder[liftLeft] > nMotorEncoder[liftRight];
-		if (speed < 0)
-		{
-			rightBehind = !rightBehind;
-		}
-		const float lagBehind = 0.75;
-		motor[liftLeft] = !rightBehind * speed + rightBehind * speed * lagBehind;
-		motor[liftRight] = rightBehind * speed + !rightBehind * speed * lagBehind;
-	}
-}
-
 void setLift(int velocity, bool checkIfBottom = true)
 {
-	motor[liftLeft] = velocity;
-	motor[liftRight] = velocity;
+	motor[lift] = velocity;
 	if (checkIfBottom)
 	{
 		bool resetZero = false;
-		while (encodersToTurns(nMotorEncoder[liftLeft]) * spoolCircumference < zeroLift)
+		while (encodersToTurns(nMotorEncoder[lift]) * gearingRatio * spoolCircumference < zeroLift)
 		{
-			motor[liftLeft] = liftAutoSpeed;
-			motor[liftRight] = liftAutoSpeed;
+			motor[lift] = liftAutoSpeed;
 			resetZero = true;
 		}
 		if (resetZero)
 		{
-			motor[liftLeft] = 0;
-			motor[liftRight] = 0;
+			motor[lift] = 0;
 		}
 	}
-	syncLift();
 }
 
 void zeroEncoders(void)
 {
-	nMotorEncoder[liftLeft] = turnsToEncoders(zeroLift / spoolCircumference);
-	nMotorEncoder[liftRight] = nMotorEncoder[liftLeft];
+	nMotorEncoder[lift] = turnsToEncoders(zeroLift / spoolCircumference);
 	nMotorEncoder[left] = 0;
 	nMotorEncoder[right] = 0;
 }

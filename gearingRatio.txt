@@ -18,3 +18,5 @@ r = Q * R / F
 r = 0.013361 m
 
 We'll probably do a 1-to-1
+
+Hah that didn't work
