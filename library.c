@@ -36,16 +36,23 @@ void syncLift(void)
 
 void setLift(int velocity, bool checkIfBottom = true)
 {
+	motor[liftLeft] = velocity;
+	motor[liftRight] = velocity;
 	if (checkIfBottom)
 	{
+		bool resetZero = false;
 		while (encodersToTurns(nMotorEncoder[liftLeft]) * spoolCircumference < zeroLift)
 		{
 			motor[liftLeft] = liftAutoSpeed;
 			motor[liftRight] = liftAutoSpeed;
+			resetZero = true;
+		}
+		if (resetZero)
+		{
+			motor[liftLeft] = 0;
+			motor[liftRight] = 0;
 		}
 	}
-	motor[liftLeft] = velocity;
-	motor[liftRight] = velocity;
 	syncLift();
 }
 
