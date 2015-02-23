@@ -108,7 +108,7 @@ task main()
 	bool asymLift = false; // TODO: Normally this should be false, but... yeah... we suck.
 
 	// If we are not going down, we do not want to go down. If this encoder starts dropping, we panic.
-	int lastEncoder = nMotorEncoder[liftLeft];
+	int lastEncoder = nMotorEncoder[lift];
 
 	// Servo / program initialization:
 
@@ -179,7 +179,7 @@ task main()
 		// Lift
 		setLift(liftValue, stopAtBottom);
 
-		lastEncoder = nMotorEncoder[liftLeft];
+		lastEncoder = nMotorEncoder[lift];
 
 		// Door opening / closing
 		if (driver2BtnA)
