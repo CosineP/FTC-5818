@@ -177,7 +177,7 @@ task main()
 		}
 
 		// Lift
-		setLift(liftValue, stopAtBottom);
+		setLift(fullMotorValue(driver1LeftStickY), stopAtBottom);
 
 		lastEncoder = nMotorEncoder[lift];
 
@@ -189,14 +189,6 @@ task main()
 		if (driver2BtnB)
 		{
 			servo[door] = 127;
-		}
-
-		// Asym lift for when everything goes wrong (sing like elsa)
-		if (driver2BtnBack)
-		{
-			asymLift = !asymLift;
-			// Avoid buttonbouncing
-			wait1Msec(20);
 		}
 
 		// Scoop
