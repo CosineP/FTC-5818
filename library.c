@@ -10,9 +10,9 @@ const int liftAutoSpeed = 75; // TODO: Make this number good
 
 const int amountAboveTubes = 3; // Everything is in centimeters. TODO: Make not arbitrary
 
-const float zeroLift = 0.5; // Going below zero would be disasterous, so we don't even wanna get close. Centimeters.
+const float zeroLift = 0; // Going below zero would be disasterous, so we don't even wanna get close. Centimeters.
 
-const float gearingRatio = 3.0/2;
+const float gearingRatio = 1.0/4;
 
 // Library functions
 
@@ -24,9 +24,12 @@ void setLift(int velocity, bool checkIfBottom = true)
 	motor[lift] = velocity;
 	if (checkIfBottom)
 	{
+		// This stores if we ever actually did have to adjust something
 		bool resetZero = false;
 		while (encodersToTurns(nMotorEncoder[lift]) * gearingRatio * spoolCircumference < zeroLift)
 		{
+			int thingy = (int)(nMotorEncoder[lift]);
+			displayTextLine(0, "Hello thi%3d", thingy);
 			motor[lift] = liftAutoSpeed;
 			resetZero = true;
 		}
