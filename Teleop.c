@@ -50,6 +50,7 @@
 
 
 // Teleop-only "library" functions:
+const int joystickZero = 7; // Joysticks are very sensitive; it may be a bit off zero when they're not trying to move anything anyway (out of 127)
 
 // Exponential function to map to the joystickValue
 int joystickToMotor(int joystickValue)
@@ -57,7 +58,6 @@ int joystickToMotor(int joystickValue)
 
 	int motorValue;
 	const int minimumValue = 4; // This value high = less control, less whining; this value low = more fine control, more whining, more magic blue smoke (out of 100)
-	const int joystickZero = 7; // Joysticks are very sensitive; it may be a bit off zero when they're not trying to move anything anyway (out of 127)
 	if (abs(joystickValue) < joystickZero)
 	{
 		motorValue = 0;
@@ -177,7 +177,12 @@ task main()
 		}
 
 		// Lift
-		setLift(fullMotorValue(driver2LeftStickY), stopAtBottom);
+		int liftSpeed = 0;
+		if (abs(driver2LeftStickY) > joystickZero)
+		{
+			liftSpeed = 100 * (driver2LeftStickY < 0 ? -1 : 1);
+		}
+		setLift(liftSpeed, stopAtBottom);
 
 		// Door opening / closing
 		if (driver2BtnA)
