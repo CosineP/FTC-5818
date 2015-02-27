@@ -152,11 +152,11 @@ task main()
 		// Grabber
 		if (driver1BtnA)
 		{
-			servo[grabber] = 0;
+			servo[grabber] = 127;
 		}
 		if (driver1BtnB)
 		{
-			servo[grabber] = 127;
+			servo[grabber] = 0;
 		}
 
 		// Lift Layout (Driver 2)
@@ -185,13 +185,13 @@ task main()
 		setLift(liftSpeed, stopAtBottom);
 
 		// Door opening / closing
-		if (driver2BtnA)
-		{
-			servo[door] = 0;
-		}
-		if (driver2BtnB)
+		if (driver2BtnX)
 		{
 			servo[door] = 127;
+		}
+		if (driver2BtnY)
+		{
+			servo[door] = 0;
 		}
 
 		// Scoop

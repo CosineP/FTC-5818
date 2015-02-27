@@ -31,21 +31,14 @@ bool hasArrived(void)
 	return false;
 }
 
-void liftHeight(int height, int speed = liftAutoSpeed)
-{
-	while (abs(encodersToTurns(nMotorEncoder[lift]) * spoolCircumference) < height)
-	{
-		int goingDown = height > 0 ? 1 : -1;
-		setLift(speed * goingDown);
-	}
-	setLift(0);
-}
-
 task main()
 {
 
 	// Go somewhat slowly so we can pick up IR
 	const int maxSpeed = 100;
+
+	// So that we have room for dumping BALLS
+	const int height = 120 + amountAboveTubes;
 
 	// When we get no signal, we go forward for a little while; this keeps track of piccollos.
 	bool wentForwardAlready = false;
@@ -60,6 +53,7 @@ task main()
 	wait1Msec(3000); // TODO: Correct # for 200000 points
 	motor[left] = 0;
 	motor[right] = 0;
+	setLift(100);
 
 	while(true)
 	{
@@ -115,15 +109,28 @@ task main()
 
 		}
 
+		//If the lift is allllll the way up
+		bool liftDone = abs(encodersToTurns(nMotorEncoder[lift]) * spoolCircumference) > height;
+
+		if (!liftDone)
+		{
+			int goingDown = height > 0 ? 1 : -1;
+			setLift(speed * goingDown);
+		}
+		else
+		{
+			setLift(0);
+		}
+
 		if (hasArrived())
 		{
 			motor[left] = 0;
 			motor[right] = 0;
-			const int height = 120 + amountAboveTubes; // So that we have room for dumping BALLS
-			liftHeight(height);
-			servo[door] = 0;
+			if (liftDone)
+			{
+				servo[door] = 127;
+			}
 			break;
-
 		}
 
 	}
