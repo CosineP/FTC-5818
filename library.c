@@ -6,7 +6,7 @@
 
 const float spoolCircumference = 6.91; // In centimeters
 
-const int liftAutoSpeed = 75; // TODO: Make this number good
+const int liftAutoSpeed = 100; // TODO: Make this number good
 
 const int amountAboveTubes = 3; // Everything is in centimeters. TODO: Make not arbitrary
 
